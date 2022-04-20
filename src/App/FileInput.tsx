@@ -2,7 +2,6 @@ import React, { useRef, useState } from "react";
 import { FolderIcon } from "@heroicons/react/outline";
 import { useDispatch, useSelector } from "react-redux";
 import { addFiles } from "../State/FileSlice";
-import FileTray from "./FileTray";
 
 export default function () {
   const [filehover, setFilehover] = useState(false);
@@ -15,8 +14,6 @@ export default function () {
 
   return (
     <div>
-      {fileCount > 0 ? <FileTray /> : ""}
-
       <label
         onDragEnter={() => setFilehover(true)}
         onDragLeave={() => setFilehover(false)}

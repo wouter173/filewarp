@@ -1,13 +1,46 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { DocumentTextIcon } from "@heroicons/react/outline";
+import { ChevronDownIcon, DocumentTextIcon } from "@heroicons/react/outline";
 
 export default function FileTray() {
   const files = useSelector((state: { files: File[] }) => state.files);
+  const trayListRef = useRef<HTMLUListElement>(null);
+  const [trayListBottom, setTrayListBottom] = useState(false);
+
+  const trayListScroll = () => {
+    const trayListScrollOffset =
+      trayListRef.current!.scrollHeight -
+      trayListRef.current!.scrollTop -
+      192 * 2;
+
+    setTrayListBottom(trayListScrollOffset <= 0);
+  };
+
+  useEffect(() => {
+    if (trayListRef.current) {
+      trayListRef.current.addEventListener("scroll", trayListScroll);
+    }
+
+    return () => {
+      trayListRef.current!.removeEventListener("scroll", trayListScroll);
+    };
+  }, [trayListRef]);
+
   if (files.length == 0) return <></>;
   return (
-    <div className="w-[500px] bg-slate-100 rounded-md p-4 mb-8">
-      <ul className="grid grid-cols-5 gap-2">
+    <div className="relative w-[500px] bg-slate-100 rounded-md p-4 mb-8">
+      <div
+        className={`
+          ${files.length > 10 && !trayListBottom ? "opacity-100" : "opacity-0"}
+          absolute bg-gradient-to-t from-slate-200 to-transparent w-full h-1/2 bottom-0 left-0 
+          rounded-md pointer-events-none transition-opacity 
+        `}
+      ></div>
+
+      <ul
+        ref={trayListRef}
+        className="grid grid-cols-5 gap-2 max-h-48 overflow-scroll"
+      >
         {files.map((file) => (
           <li className=" grid text-center p-2 rounded-md">
             <DocumentTextIcon className="mx-auto w-12 h-12 text-indigo-400 stroke-2" />

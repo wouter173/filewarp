@@ -5,7 +5,7 @@ export const fileSlice = createSlice({
   initialState: [] as any[],
   reducers: {
     addFiles: (state, action) => {
-      return [...state, ...action.payload];
+      return [...state, ...action.payload.files];
     },
   },
 });

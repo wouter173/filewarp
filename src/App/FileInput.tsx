@@ -31,7 +31,7 @@ export default function () {
       >
         <input
           onChange={() => {
-            dispatch(addFiles(inputRef.current!.files));
+            dispatch(addFiles({ files: inputRef.current!.files }));
           }}
           ref={inputRef}
           type="file"

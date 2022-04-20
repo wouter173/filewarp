@@ -1,9 +1,5 @@
-import {
-  FolderDownloadIcon,
-  RefreshIcon,
-  UserIcon,
-} from "@heroicons/react/outline";
 import React from "react";
+import { FolderDownloadIcon } from "@heroicons/react/outline";
 import { useSelector } from "react-redux";
 import { Identity } from "../State/IdentitySlice";
 

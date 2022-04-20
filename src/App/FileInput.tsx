@@ -17,7 +17,6 @@ export default function () {
       <label
         onDragEnter={() => setFilehover(true)}
         onDragLeave={() => setFilehover(false)}
-        onBlur={() => setFilehover(false)}
         onDrop={() => setFilehover(false)}
         className={`
           ${filehover ? "bg-indigo-50" : ""}
@@ -41,9 +40,6 @@ export default function () {
           <p className="text-gray-400 text-sm">(click or drag)</p>
         </div>
       </label>
-      <button className="min-w-[500px] w-full py-3 px-32 bg-indigo-500 text-white text-sm font-semibold rounded-lg">
-        Warp!
-      </button>
     </div>
   );
 }

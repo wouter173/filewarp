@@ -36,6 +36,7 @@ export default function () {
           ref={inputRef}
           type="file"
           className="bg-black w-full h-full absolute opacity-0"
+          multiple
         />
         <FolderIcon className="h-16 w-16 text-indigo-500 stroke-[1.4]"></FolderIcon>
         <div>

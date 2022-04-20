@@ -1,30 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { ChevronDownIcon, DocumentTextIcon } from "@heroicons/react/outline";
+import { DocumentTextIcon } from "@heroicons/react/outline";
 
 export default function FileTray() {
   const files = useSelector((state: { files: File[] }) => state.files);
   const trayListRef = useRef<HTMLUListElement>(null);
   const [trayListBottom, setTrayListBottom] = useState(false);
 
-  const trayListScroll = () => {
-    const trayListScrollOffset =
-      trayListRef.current!.scrollHeight -
-      trayListRef.current!.scrollTop -
-      192 * 2;
+  const trayListScroll = (ev: React.UIEvent<HTMLUListElement>) => {
+    const target = ev.target as HTMLUListElement;
+    const trayListScrollOffset = target.scrollHeight - target.scrollTop - 200;
 
     setTrayListBottom(trayListScrollOffset <= 0);
   };
-
-  useEffect(() => {
-    if (trayListRef.current) {
-      trayListRef.current.addEventListener("scroll", trayListScroll);
-    }
-
-    return () => {
-      trayListRef.current!.removeEventListener("scroll", trayListScroll);
-    };
-  }, [trayListRef]);
 
   if (files.length == 0) return <></>;
   return (
@@ -38,7 +26,7 @@ export default function FileTray() {
       ></div>
 
       <ul
-        ref={trayListRef}
+        onScroll={trayListScroll}
         className="grid grid-cols-5 gap-2 max-h-48 overflow-scroll"
       >
         {files.map((file) => (

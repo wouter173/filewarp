@@ -22,7 +22,10 @@ export default function () {
           ${filehover ? "bg-indigo-50" : ""}
           ${fileCount > 0 ? "py-4" : "py-24 flex-col"}
           bg-slate-50 hover:bg-slate-100
-          relative flex items-center justify-center border-dashed rounded-lg border-[4px] border-indigo-400 mb-8 cursor-pointer transition-colors
+          border-indigo-400 hover:border-indigo-500
+          border-[4px] border-dashed rounded-lg
+          relative flex items-center justify-center  
+           mb-8 cursor-pointer transition-colors
         `}
       >
         <input
@@ -31,7 +34,7 @@ export default function () {
           }}
           ref={inputRef}
           type="file"
-          className="bg-black w-full h-full absolute opacity-0"
+          className="bg-black w-full h-full absolute opacity-0 cursor-pointer"
           multiple
         />
         <FolderIcon className="h-16 w-16 text-indigo-500 stroke-[1.4]"></FolderIcon>

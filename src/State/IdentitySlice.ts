@@ -8,7 +8,7 @@ export const fileSlice = createSlice({
   name: "files",
   initialState: { id: null } as Identity,
   reducers: {
-    setID(state, action) {
+    setID(state, action: { payload: string }) {
       state.id = action.payload;
     },
   },

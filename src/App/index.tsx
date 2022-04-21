@@ -9,7 +9,7 @@ export default function App() {
         <Header />
         <FileTray />
         <FileInput />
-        <button className="min-w-[500px] w-full py-3 px-32 bg-indigo-500 text-white text-sm font-semibold rounded-lg">
+        <button className="min-w-[500px] w-full py-3 px-32 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-lg transition-colors">
           Next
         </button>
       </main>

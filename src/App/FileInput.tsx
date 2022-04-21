@@ -8,9 +8,22 @@ export default function () {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
-  const fileCount = useSelector(
-    (state: { files: File[] }) => state.files.length
+  const fileNames = useSelector((state: { files: File[] }) =>
+    state.files.map((f) => f.name)
   );
+
+  const addFilesHandler = () => {
+    if (inputRef.current) {
+      var [...files] = inputRef.current.files || [];
+
+      //TODO visual feedback when a file gets filtered
+      files = files.filter((file) => !fileNames.includes(file.name));
+      files = files.filter((file) => file.size > 0);
+
+      dispatch(addFiles({ files: files }));
+      inputRef.current.files = null;
+    }
+  };
 
   return (
     <div>
@@ -20,7 +33,7 @@ export default function () {
         onDrop={() => setFilehover(false)}
         className={`
           ${filehover ? "bg-indigo-50" : ""}
-          ${fileCount > 0 ? "py-4" : "py-24 flex-col"}
+          ${fileNames.length > 0 ? "py-4" : "py-24 flex-col"}
           bg-slate-50 hover:bg-slate-100
           border-indigo-400 hover:border-indigo-500
           border-[4px] border-dashed rounded-lg
@@ -29,9 +42,7 @@ export default function () {
         `}
       >
         <input
-          onChange={() => {
-            dispatch(addFiles({ files: inputRef.current!.files }));
-          }}
+          onChange={addFilesHandler}
           ref={inputRef}
           type="file"
           className="bg-black w-full h-full absolute opacity-0 cursor-pointer"

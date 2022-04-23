@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { FolderIcon } from "@heroicons/react/outline";
 import { useDispatch, useSelector } from "react-redux";
+import { FolderIcon } from "@heroicons/react/outline";
 import { addFiles } from "../State/FileSlice";
 
 export default function () {
@@ -8,9 +8,9 @@ export default function () {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
-  const fileNames = useSelector((state: { files: File[] }) =>
-    state.files.map((f) => f.name)
-  );
+  const fileNames = useSelector((state: { files: File[] }) => {
+    return state.files.map((f) => f.name);
+  });
 
   const addFilesHandler = () => {
     if (inputRef.current) {

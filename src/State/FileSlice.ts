@@ -1,8 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-type Payload<T> = {
-  payload: T;
-};
+import { Payload } from "./Types";
 
 export const fileSlice = createSlice({
   name: "files",

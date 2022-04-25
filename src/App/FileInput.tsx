@@ -38,7 +38,8 @@ export default function () {
           border-indigo-400 hover:border-indigo-500
           border-[4px] border-dashed rounded-lg
           relative flex items-center justify-center  
-           mb-8 cursor-pointer transition-colors
+          mb-8 cursor-pointer transition-colors
+          focus-within:border-indigo-500
         `}
       >
         <input

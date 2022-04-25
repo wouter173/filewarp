@@ -16,7 +16,7 @@ export default function App() {
         <FileInput />
         <button
           onClick={() => dispatch(setSendDialog(true))}
-          className="min-w-[500px] w-full py-3 px-32 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-lg transition-colors"
+          className="min-w-[500px] w-full py-3 px-32 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-lg transition-colors focusable"
         >
           Next
         </button>

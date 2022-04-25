@@ -5,3 +5,13 @@
 body {
   font-family: "Inter", sans-serif;
 }
+
+@layer components {
+  button.focusable {
+    @apply focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:outline-none hover:ring-indigo-600;
+  }
+
+  input.focusable {
+    @apply ring-2 ring-indigo-200 focus:ring-indigo-500 focus:outline-none active:ring-indigo-500;
+  }
+}

@@ -1,8 +1,9 @@
 import { useDispatch } from "react-redux";
-import { setSendDialog } from "../State/DialogSlice";
+import { setReceiveDialog, setSendDialog } from "../State/DialogSlice";
 import FileInput from "./FileInput";
 import FileTray from "./FileTray";
 import Header from "./Header";
+import ReceiveDialog from "./ReceiveDialog";
 import SendDialog from "./SendDialog";
 
 export default function App() {
@@ -15,13 +16,13 @@ export default function App() {
         <FileTray />
         <FileInput />
         <button
-          onClick={() => dispatch(setSendDialog(true))}
+          onClick={() => dispatch(setReceiveDialog(true))}
           className="min-w-[500px] w-full py-3 px-32 bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold rounded-lg transition-colors focusable"
         >
           Next
         </button>
       </main>
-
+      <ReceiveDialog />
       <SendDialog />
     </section>
   );

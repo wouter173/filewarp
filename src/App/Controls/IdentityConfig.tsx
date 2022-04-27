@@ -1,9 +1,4 @@
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Popover } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/solid";
 import { usePopper } from "react-popper";
@@ -12,9 +7,7 @@ import { Identity, setNickName } from "../../State/IdentitySlice";
 
 export default function IdentityConfig() {
   const dispatch = useDispatch();
-  const nickname = useSelector(
-    (state: { identity: Identity }) => state.identity.nickname
-  );
+  const nickname = useSelector((state: { identity: Identity }) => state.identity.nickname);
 
   const [referenceEl, setReferenceEl] = useState<HTMLElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
@@ -40,12 +33,7 @@ export default function IdentityConfig() {
         <UserIcon />
       </Popover.Button>
 
-      <Popover.Panel
-        ref={setPopperElement}
-        className="absolute z-10"
-        style={styles.popper}
-        {...attributes.popper}
-      >
+      <Popover.Panel ref={setPopperElement} className="absolute z-20" style={styles.popper} {...attributes.popper}>
         <div
           ref={setArrowRef}
           style={styles.arrow}
@@ -55,13 +43,12 @@ export default function IdentityConfig() {
           <label htmlFor="nickname" className="block font-semibold">
             Nickname
           </label>
+          {/* TODO: may not include @'s */}
           <input
-            placeholder="coolguy#34"
+            placeholder="coolguy"
             autoFocus
             value={nickname}
-            onChange={(ev: ChangeEvent<HTMLInputElement>) =>
-              dispatch(setNickName(ev.target.value))
-            }
+            onChange={(ev: ChangeEvent<HTMLInputElement>) => dispatch(setNickName(ev.target.value))}
             type="text"
             id="nickname"
             maxLength={20}

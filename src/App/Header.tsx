@@ -2,10 +2,10 @@ import React from "react";
 import IdentityConfig from "./Controls/IdentityConfig";
 import { FolderDownloadIcon } from "@heroicons/react/outline";
 import { useSelector } from "react-redux";
-import { Identity } from "../State/IdentitySlice";
+import { IdentityPair } from "../State/IdentitySlice";
 
 export default function Header() {
-  const id = useSelector((state: { identity: Identity }) => state.identity.id);
+  const id = useSelector((state: { identity: IdentityPair }) => state.identity.local.ID);
 
   return (
     <header className="mb-12 grid grid-cols-2">
@@ -14,10 +14,13 @@ export default function Header() {
         <p>p2p file transfer</p>
       </section>
       <section className="flex justify-end gap-2 h-min">
-        <button className="flex items-center bg-slate-100 px-3 py-2 rounded-md hover:bg-slate-200 transition-colors focusable">
+        <button
+          onClick={() => navigator.clipboard.writeText(id)}
+          className="flex items-center bg-slate-100 px-3 py-2 rounded-md hover:bg-slate-200 transition-colors focusable"
+        >
           <p className="flex min-w-[80px]">
-            <span className="font-semibold">ID: </span>
-            <span>{id ? id : "______"}</span>
+            <span className="font-semibold mr-1">ID: </span>
+            <span>{id ? id : "******"}</span>
           </p>
         </button>
         <IdentityConfig />

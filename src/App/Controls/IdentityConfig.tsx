@@ -3,11 +3,11 @@ import { Popover } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/solid";
 import { usePopper } from "react-popper";
 import { useDispatch, useSelector } from "react-redux";
-import { Identity, setNickName } from "../../State/IdentitySlice";
+import { IdentityPair, setLocalNickname } from "../../State/IdentitySlice";
 
 export default function IdentityConfig() {
   const dispatch = useDispatch();
-  const nickname = useSelector((state: { identity: Identity }) => state.identity.nickname);
+  const nickname = useSelector((state: { identity: IdentityPair }) => state.identity.local.nickname);
 
   const [referenceEl, setReferenceEl] = useState<HTMLElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
@@ -48,7 +48,7 @@ export default function IdentityConfig() {
             placeholder="coolguy"
             autoFocus
             value={nickname}
-            onChange={(ev: ChangeEvent<HTMLInputElement>) => dispatch(setNickName(ev.target.value))}
+            onChange={(ev: ChangeEvent<HTMLInputElement>) => dispatch(setLocalNickname(ev.target.value))}
             type="text"
             id="nickname"
             maxLength={20}

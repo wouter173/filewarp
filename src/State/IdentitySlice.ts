@@ -1,14 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Payload } from "./Types";
 
-export type Identity = {
-  nickname: string;
-  ID: string;
-};
-
 export type IdentityPair = {
   local: Identity;
   peer: Identity;
+};
+
+export type Identity = {
+  nickname: string;
+  ID: string;
 };
 
 const defaultIdentity: Identity = {
@@ -17,7 +17,7 @@ const defaultIdentity: Identity = {
 };
 
 export const identitySlice = createSlice({
-  name: "identity",
+  name: "Identity",
   initialState: { local: defaultIdentity, peer: defaultIdentity } as IdentityPair,
   reducers: {
     setLocalNickname(state, action: Payload<string>) {

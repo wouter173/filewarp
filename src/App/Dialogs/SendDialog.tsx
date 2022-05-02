@@ -1,10 +1,10 @@
-import React, { Fragment, useContext } from "react";
+import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setSendDialog } from "../../State/DialogSlice";
 import { IdentityPair, setPeerID } from "../../State/IdentitySlice";
-import webSocketContext from "../../Contexts/WebSocket";
-import webRTCContext from "../../Contexts/WebRTC";
+import webSocket from "../../Contexts/WebSocket";
+import webRTC from "../../Contexts/WebRTC";
 import OtpInput from "react-otp-input";
 
 export default function SendDialog() {
@@ -14,14 +14,11 @@ export default function SendDialog() {
   const fileCount = useSelector((state: { files: File[] }) => state.files.length);
   const recipientID = useSelector((state: { identity: IdentityPair }) => state.identity.peer.ID);
 
-  const { sendMessage } = useContext(webSocketContext)!;
-  const { createOffer } = useContext(webRTCContext)!;
-
   const setIsOpen = (payload: boolean) => dispatch(setSendDialog(payload));
 
   const handleSend = async () => {
-    const data = await createOffer();
-    sendMessage(data);
+    const data = await webRTC.createOffer();
+    webSocket.sendMessage(data);
   };
 
   return (

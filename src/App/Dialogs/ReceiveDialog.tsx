@@ -1,33 +1,31 @@
-import React, { Fragment, useContext } from "react";
+import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setReceiveDialog } from "../../State/DialogSlice";
-import { IdentityPair } from "../../State/IdentitySlice";
-import connectionsContext from "../../Contexts";
-import webRTCContext from "../../Contexts/WebRTC";
-import webSocketContext from "../../Contexts/WebSocket";
+import { IdentityPair, setPeerID, setPeerNickname } from "../../State/IdentitySlice";
+import webRTC from "../../Contexts/WebRTC";
+import webSocket from "../../Contexts/WebSocket";
+import { setOffer } from "../../State/ConnectionSlice";
 
 export default function ReceiveDialog() {
   const dispatch = useDispatch();
-  const [offer, setOffer] = useContext(connectionsContext).webRTC.offer!;
-  const { createAccept } = useContext(webRTCContext)!;
-  const { respondMessage } = useContext(webSocketContext)!;
-
   const identities = useSelector((state: { identity: IdentityPair }) => state.identity);
   const isOpen = useSelector((state: { dialogs: { receiveDialog: boolean } }) => {
     return state.dialogs.receiveDialog;
   });
 
   const handleAccept = async () => {
-    console.log(offer);
+    webRTC.handleOffer();
+    const accept = await webRTC.createAccept();
+    webSocket.sendMessage(accept);
     dispatch(setReceiveDialog(false));
-    const accept = await createAccept();
-    respondMessage(accept);
   };
 
   const handleIgnore = () => {
     dispatch(setReceiveDialog(false));
-    setOffer(null);
+    dispatch(setPeerNickname(""));
+    dispatch(setPeerID(""));
+    dispatch(setOffer(null));
   };
 
   return (

@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { Payload } from "./Types";
 
 export const fileSlice = createSlice({
-  name: "files",
+  name: "Files",
   initialState: [] as File[],
   reducers: {
     addFiles: (state, action: Payload<{ files: File[] }>) => {

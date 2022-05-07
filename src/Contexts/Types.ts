@@ -8,7 +8,7 @@ export type WSMessageBody = WSMessageMeta<any> & {
 };
 
 export type WSMessageMeta<T> = {
-  type: "hello" | "offer" | "accept" | "nic";
+  type: "hello" | "propose" | "engage" | "offer" | "accept" | "nic";
   data: T;
 };
 
@@ -16,6 +16,6 @@ export type WSMessageData = {
   sdp: any;
 };
 
-export type WSOfferData = WSMessageData & {
+export type WSProposeData = {
   nickname: string;
 };

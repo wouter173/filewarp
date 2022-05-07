@@ -8,17 +8,13 @@ export type ConnectionData = {
 
 export const ConnectionSlice = createSlice({
   name: "Connection",
-  initialState: { connected: false, offer: null } as ConnectionData,
+  initialState: { connected: false } as ConnectionData,
   reducers: {
     setConnected(state, action: Payload<boolean>) {
       state.connected = action.payload;
     },
-
-    setOffer(state, action: Payload<RTCSessionDescription | null>) {
-      state.offer = action.payload;
-    },
   },
 });
 
-export const { setConnected, setOffer } = ConnectionSlice.actions;
+export const { setConnected } = ConnectionSlice.actions;
 export default ConnectionSlice.reducer;

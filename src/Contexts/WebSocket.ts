@@ -1,8 +1,8 @@
 import { WSMessageBody, WSMessageEvent, WSMessageMeta } from "./Types";
 import store from "../State/Store";
 import { setLocalID, setPeerID, setPeerNickname } from "../State/IdentitySlice";
-import { setOffer } from "../State/ConnectionSlice";
 import { setReceiveDialog } from "../State/DialogSlice";
+import webRTC from "./WebRTC";
 
 class FWWebSocket {
   private ws: WebSocket;
@@ -23,27 +23,36 @@ class FWWebSocket {
     const [sen, rec] = [state.identity.local.ID, state.identity.peer.ID];
     const body: WSMessageBody = { sen, rec, ...data };
     this.ws.send(JSON.stringify(body));
-    console.log(body);
   };
 
-  handleMessage = (ev: WSMessageEvent) => {
+  handleMessage = async (ev: WSMessageEvent) => {
     const body = JSON.parse(ev.data) as WSMessageBody;
-    console.log(ev.data);
 
     switch (body.type) {
       case "hello":
         store.dispatch(setLocalID(body.data));
         break;
-      case "offer":
+
+      case "propose":
         if (store.getState().connection.connected) return;
 
-        store.dispatch(setOffer(body.data.sdp));
         store.dispatch(setPeerNickname(body.data.nickname));
         store.dispatch(setPeerID(body.sen));
         store.dispatch(setReceiveDialog(true));
         break;
-      case "accept":
+      case "engage":
+        const offer = await webRTC.createOffer();
+        this.sendMessage(offer);
         break;
+      case "offer":
+        const accept = await webRTC.createAccept(body.data.sdp);
+        this.sendMessage(accept);
+        break;
+      case "accept":
+        webRTC.handleAccept(body.data.sdp);
+        break;
+      case "nic":
+        webRTC.handlePeerIceCandidate(body.data);
       default:
         console.log(body);
     }

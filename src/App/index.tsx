@@ -1,11 +1,10 @@
-import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setReceiveDialog, setSendDialog } from "../State/DialogSlice";
+import { setSendDialog } from "../State/DialogSlice";
+import ReceiveDialog from "./Dialogs/ReceiveDialog";
+import SendDialog from "./Dialogs/SendDialog";
 import FileInput from "./FileInput";
 import FileTray from "./FileTray";
 import Header from "./Header";
-import ReceiveDialog from "./Dialogs/ReceiveDialog";
-import SendDialog from "./Dialogs/SendDialog";
 
 export default function App() {
   const dispatch = useDispatch();

@@ -1,65 +1,104 @@
-import { iceServers } from "./ice";
-import { WSMessageData, WSMessageMeta, WSOfferData } from "./Types";
+import { setConnected } from "../State/ConnectionSlice";
 import store from "../State/Store";
+import { iceServers } from "./ice";
+import { WSMessageData, WSMessageMeta } from "./Types";
+import webSocket from "./WebSocket";
 
-class webRTC {
+class WebRTC {
   private pc: RTCPeerConnection;
+  private dc!: RTCDataChannel;
 
   constructor() {
     this.pc = new RTCPeerConnection({ iceServers });
-    this.pc.addEventListener("icecandidate", this.handleIceCandidate);
-    this.pc.addEventListener("connectionstatechange", this.handleConnectionChange);
+    this.pc.addEventListener("negotiationneeded", (ev) => console.log("negotiationneeded", ev));
+    this.pc.addEventListener("iceconnectionstatechange", (ev) => console.log("iceconnectionstatechange", ev));
+    this.pc.addEventListener("icecandidateerror", (ev) => console.log("icecandidateerror", ev));
+    this.pc.addEventListener("icecandidate", this.handleIceCandidate.bind(this));
+    this.pc.addEventListener("connectionstatechange", this.handleConnectionChange.bind(this));
+    this.pc.addEventListener("datachannel", this.handleDataChannel.bind(this));
   }
 
   handleConnectionChange() {
-    console.log(this.pc.connectionState);
+    if (this.pc.connectionState == "connected") {
+      console.log(this);
+      console.log("we are connected");
+    }
   }
 
   handleIceCandidate(ev: RTCPeerConnectionIceEvent) {
-    console.log(ev.candidate);
+    webSocket.sendMessage({
+      type: "nic",
+      data: ev.candidate,
+    });
   }
 
+  handlePeerIceCandidate(candidate: RTCIceCandidate) {
+    this.pc.addIceCandidate(candidate);
+  }
+
+  handleDataChannel(ev: RTCDataChannelEvent) {
+    this.dc = ev.channel;
+    this.registerDataChannel();
+  }
+
+  registerDataChannel = () => {
+    this.dc.addEventListener("open", this.dataChannelOpen.bind(this));
+    this.dc.addEventListener("close", this.dataChannelClose.bind(this));
+    this.dc.addEventListener("message", this.dataChannelMessage.bind(this));
+  };
+
+  dataChannelOpen = () => {
+    store.dispatch(setConnected(true));
+  };
+
+  dataChannelClose = () => {
+    store.dispatch(setConnected(false));
+  };
+
+  dataChannelMessage = (ev: MessageEvent) => {
+    console.log(ev.data);
+  };
+
+  sendMessage = () => {
+    this.dc.send("test");
+  };
+
   createOffer = async () => {
-    return new Promise<WSMessageMeta<WSOfferData>>(async (resolve, reject) => {
-      const identities = store.getState().identity;
+    //datachannel creation has to be done before the creation of a offer otherwise ICE does not work
+    //dont ask, I do not have the answer
+    this.dc = this.pc.createDataChannel("Amstel");
+    this.registerDataChannel();
 
-      const offer = await this.pc.createOffer();
-      const data: WSMessageMeta<WSOfferData> = {
-        type: "offer",
-        data: { nickname: identities.local.nickname, sdp: offer },
-      };
+    const offer = await this.pc.createOffer();
+    await this.pc.setLocalDescription(offer);
 
-      resolve(data);
-    });
+    const data: WSMessageMeta<WSMessageData> = {
+      type: "offer",
+      data: { sdp: offer },
+    };
+
+    return data;
   };
 
-  handleOffer = async () => {
-    return new Promise<void>(async (resolve, reject) => {
-      const offer = store.getState().connection.offer;
-      if (!offer) return reject(new Error("No Offer available."));
+  createAccept = async (offer: RTCSessionDescription) => {
+    const desc = new RTCSessionDescription(offer);
+    await this.pc.setRemoteDescription(desc);
 
-      const desc = new RTCSessionDescription(offer);
-      await this.pc.setRemoteDescription(desc);
+    const answer = await this.pc.createAnswer();
+    await this.pc.setLocalDescription(answer);
 
-      resolve();
-    });
+    const data: WSMessageMeta<WSMessageData> = {
+      type: "accept",
+      data: { sdp: answer },
+    };
+
+    return data;
   };
 
-  createAccept = async () => {
-    return new Promise<WSMessageMeta<WSMessageData>>(async (resolve, reject) => {
-      const answer = await this.pc.createAnswer();
-      await this.pc.setLocalDescription(answer);
-
-      const data: WSMessageMeta<WSMessageData> = {
-        type: "accept",
-        data: { sdp: answer },
-      };
-
-      resolve(data);
-    });
-
-    const handleAccept = async () => {};
+  handleAccept = async (answer: RTCSessionDescription) => {
+    await this.pc.setRemoteDescription(answer);
+    console.log(this.pc);
   };
 }
 
-export default new webRTC();
+export default new WebRTC();

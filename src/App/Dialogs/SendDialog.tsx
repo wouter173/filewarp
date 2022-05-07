@@ -1,23 +1,26 @@
-import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import OtpInput from "react-otp-input";
 import { useDispatch, useSelector } from "react-redux";
+import { WSMessageMeta, WSProposeData } from "../../Contexts/Types";
+import webSocket from "../../Contexts/WebSocket";
 import { setSendDialog } from "../../State/DialogSlice";
 import { IdentityPair, setPeerID } from "../../State/IdentitySlice";
-import webSocket from "../../Contexts/WebSocket";
-import webRTC from "../../Contexts/WebRTC";
-import OtpInput from "react-otp-input";
 
 export default function SendDialog() {
   const dispatch = useDispatch();
 
   const isOpen = useSelector((state: { dialogs: { sendDialog: boolean } }) => state.dialogs.sendDialog);
   const fileCount = useSelector((state: { files: File[] }) => state.files.length);
-  const recipientID = useSelector((state: { identity: IdentityPair }) => state.identity.peer.ID);
+  const identities = useSelector((state: { identity: IdentityPair }) => state.identity);
 
   const setIsOpen = (payload: boolean) => dispatch(setSendDialog(payload));
 
   const handleSend = async () => {
-    const data = await webRTC.createOffer();
+    const data: WSMessageMeta<WSProposeData> = {
+      type: "propose",
+      data: { nickname: identities.local.nickname },
+    };
     webSocket.sendMessage(data);
   };
 
@@ -61,7 +64,7 @@ export default function SendDialog() {
               Recipient ID
               <OtpInput
                 onChange={(value: string) => dispatch(setPeerID(value))}
-                value={recipientID}
+                value={identities.peer.ID}
                 isInputNum
                 numInputs={6}
                 placeholder="123456"

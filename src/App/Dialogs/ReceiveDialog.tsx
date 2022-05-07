@@ -1,11 +1,10 @@
-import React, { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { WSMessageMeta } from "../../Contexts/Types";
+import webSocket from "../../Contexts/WebSocket";
 import { setReceiveDialog } from "../../State/DialogSlice";
 import { IdentityPair, setPeerID, setPeerNickname } from "../../State/IdentitySlice";
-import webRTC from "../../Contexts/WebRTC";
-import webSocket from "../../Contexts/WebSocket";
-import { setOffer } from "../../State/ConnectionSlice";
 
 export default function ReceiveDialog() {
   const dispatch = useDispatch();
@@ -15,9 +14,11 @@ export default function ReceiveDialog() {
   });
 
   const handleAccept = async () => {
-    webRTC.handleOffer();
-    const accept = await webRTC.createAccept();
-    webSocket.sendMessage(accept);
+    const data: WSMessageMeta<{}> = {
+      type: "engage",
+      data: {},
+    };
+    webSocket.sendMessage(data);
     dispatch(setReceiveDialog(false));
   };
 
@@ -25,7 +26,6 @@ export default function ReceiveDialog() {
     dispatch(setReceiveDialog(false));
     dispatch(setPeerNickname(""));
     dispatch(setPeerID(""));
-    dispatch(setOffer(null));
   };
 
   return (

@@ -13,7 +13,7 @@ export default function IdentityConfig() {
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null);
 
-  let { styles, attributes } = usePopper(referenceEl, popperElement, {
+  const { styles, attributes } = usePopper(referenceEl, popperElement, {
     modifiers: [
       {
         name: "arrow",
@@ -43,7 +43,7 @@ export default function IdentityConfig() {
           <label htmlFor="nickname" className="block font-semibold">
             Nickname
           </label>
-          {/* TODO: may not include @'s */}
+          {/* TODO: may not include #'s */}
           <input
             placeholder="coolguy"
             autoFocus

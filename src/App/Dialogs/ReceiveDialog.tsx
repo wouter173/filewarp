@@ -56,7 +56,7 @@ export default function ReceiveDialog() {
         >
           <div className="fixed bg-white w-auto h-min p-8 rounded-lg max-w-lg">
             <Dialog.Title as="h1" className="text-2xl font-semibold truncate">
-              {identities.peer.nickname ? identities.peer.nickname + "@" : null}
+              {identities.peer.nickname ? identities.peer.nickname + "#" : null}
               {identities.peer.ID}
             </Dialog.Title>
             <div className="mb-4 w-full">

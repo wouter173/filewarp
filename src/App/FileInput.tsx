@@ -1,26 +1,26 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FolderIcon } from "@heroicons/react/outline";
-import { addFiles } from "../State/FileSlice";
+import { addLocalFiles, FilePair } from "../State/FileSlice";
 
 export default function () {
   const [filehover, setFilehover] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
-  const fileNames = useSelector((state: { files: File[] }) => {
-    return state.files.map((f) => f.name);
+  const fileNames = useSelector((state: { files: FilePair }) => {
+    return state.files.localFiles.map((f) => f.name);
   });
 
   const addFilesHandler = () => {
     if (inputRef.current) {
       var [...files] = inputRef.current.files || [];
 
-      //TODO visual feedback when a file gets filtered
+      //TODO: visual feedback when a file gets filtered
       files = files.filter((file) => !fileNames.includes(file.name));
       files = files.filter((file) => file.size > 0);
 
-      dispatch(addFiles({ files: files }));
+      dispatch(addLocalFiles({ files: files }));
       inputRef.current.files = null;
     }
   };

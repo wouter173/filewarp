@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { DocumentTextIcon, XIcon } from "@heroicons/react/outline";
 import { useDispatch } from "react-redux";
-import { removeFile } from "../State/FileSlice";
+import { removeLocalFile } from "../State/FileSlice";
 
 type Props = {
   file: File;
@@ -18,7 +18,7 @@ export default function FileEntry(props: Props) {
       className="max-h-24 max-w-24 relative grid text-center p-2 rounded-md z-10 aspect-square hover:bg-white"
     >
       <button
-        onClick={() => dispatch(removeFile({ file: props.file }))}
+        onClick={() => dispatch(removeLocalFile({ file: props.file }))}
         className={`
           ${hovering ? "opacity-100" : "opacity-0"}
           bg-red-500 hover:bg-red-600

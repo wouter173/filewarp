@@ -1,20 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Payload } from "./Types";
 
+export type ConnectionState = "disconnected" | "connecting" | "connected";
 export type ConnectionData = {
-  connected: boolean;
-  offer: RTCSessionDescription | null;
+  connectionState: ConnectionState;
 };
 
 export const ConnectionSlice = createSlice({
   name: "Connection",
-  initialState: { connected: false } as ConnectionData,
+  initialState: { connectionState: "disconnected" } as ConnectionData,
   reducers: {
-    setConnected(state, action: Payload<boolean>) {
-      state.connected = action.payload;
+    setConnectionState(state, action: Payload<ConnectionState>) {
+      state.connectionState = action.payload;
     },
   },
 });
 
-export const { setConnected } = ConnectionSlice.actions;
+export const { setConnectionState } = ConnectionSlice.actions;
 export default ConnectionSlice.reducer;

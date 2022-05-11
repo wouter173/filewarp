@@ -34,7 +34,7 @@ class FWWebSocket {
         break;
 
       case "propose":
-        if (store.getState().connection.connected) return;
+        if (store.getState().connection.connectionState == "connected") return;
 
         store.dispatch(setPeerNickname(body.data.nickname));
         store.dispatch(setPeerID(body.sen));

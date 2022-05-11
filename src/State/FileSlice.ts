@@ -1,19 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Payload } from "./Types";
 
+export type FilePair = { localFiles: File[]; receivedFiles: File[] };
+
 export const fileSlice = createSlice({
   name: "Files",
-  initialState: [] as File[],
+  initialState: { localFiles: [], receivedFiles: [] } as FilePair,
   reducers: {
-    addFiles: (state, action: Payload<{ files: File[] }>) => {
-      return [...state, ...action.payload.files];
+    addLocalFiles: (state, action: Payload<{ files: File[] }>) => {
+      state.localFiles = [...state.localFiles, ...action.payload.files];
     },
 
-    removeFile: (state, action: Payload<{ file: File }>) => {
-      return state.filter((file) => file.name != action.payload.file.name);
+    removeLocalFile: (state, action: Payload<{ file: File }>) => {
+      state.localFiles = state.localFiles.filter((file) => file.name != action.payload.file.name);
+    },
+
+    addReceivedFile: (state, action: Payload<{ file: File }>) => {
+      state.receivedFiles = [...state.receivedFiles, action.payload.file];
+    },
+
+    removeReceivedFile: (state, action: Payload<{ file: File }>) => {
+      state.receivedFiles = state.receivedFiles.filter((file) => file.name != action.payload.file.name);
     },
   },
 });
 
-export const { addFiles, removeFile } = fileSlice.actions;
+export const { addLocalFiles, removeLocalFile, addReceivedFile, removeReceivedFile } = fileSlice.actions;
 export default fileSlice.reducer;

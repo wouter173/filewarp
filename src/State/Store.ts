@@ -15,7 +15,7 @@ export default configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActionPaths: ["payload.files"],
+        ignoredActionPaths: ["payload.files", "payload.file"],
         ignoredPaths: ["files"],
       },
     }),

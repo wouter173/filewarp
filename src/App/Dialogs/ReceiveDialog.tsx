@@ -1,8 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { WSMessageMeta } from "../../Contexts/Types";
-import webSocket from "../../Contexts/WebSocket";
+import { WSMessageMeta } from "../../Misc/Types";
+import webSocket from "../../Misc/WebSocket";
 import { setReceiveDialog } from "../../State/DialogSlice";
 import { IdentityPair, setPeerID, setPeerNickname } from "../../State/IdentitySlice";
 

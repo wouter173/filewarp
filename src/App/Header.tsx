@@ -1,6 +1,6 @@
-import { FolderDownloadIcon } from "@heroicons/react/outline";
 import IDDisplay from "./Controls/IDDisplay";
 import IdentityConfig from "./Controls/IdentityConfig";
+import ReceivedFileDisplay from "./Controls/ReceivedFileDisplay";
 
 export default function Header() {
   return (
@@ -12,9 +12,7 @@ export default function Header() {
       <section className="flex justify-end gap-2 h-min">
         <IDDisplay />
         <IdentityConfig />
-        <button className="h-10 w-10 text-indigo-500 bg-slate-100 p-2 rounded-md hover:bg-slate-200 transition-colors focusable">
-          <FolderDownloadIcon />
-        </button>
+        <ReceivedFileDisplay />
       </section>
     </header>
   );

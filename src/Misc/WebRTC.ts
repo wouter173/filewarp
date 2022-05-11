@@ -1,7 +1,9 @@
-import { setConnected } from "../State/ConnectionSlice";
+import { setConnectionState } from "../State/ConnectionSlice";
+import { addReceivedFile } from "../State/FileSlice";
 import store from "../State/Store";
 import { iceServers } from "./ice";
 import { WSMessageData, WSMessageMeta } from "./Types";
+import { decodeFile } from "./utils";
 import webSocket from "./WebSocket";
 
 class WebRTC {
@@ -19,6 +21,7 @@ class WebRTC {
   }
 
   handleConnectionChange() {
+    console.log("handleConnectionChange");
     if (this.pc.connectionState == "connected") {
       console.log(this);
       console.log("we are connected");
@@ -26,6 +29,7 @@ class WebRTC {
   }
 
   handleIceCandidate(ev: RTCPeerConnectionIceEvent) {
+    if (!ev.candidate?.candidate) return;
     webSocket.sendMessage({
       type: "nic",
       data: ev.candidate,
@@ -48,19 +52,21 @@ class WebRTC {
   };
 
   dataChannelOpen = () => {
-    store.dispatch(setConnected(true));
+    store.dispatch(setConnectionState("connected"));
   };
 
   dataChannelClose = () => {
-    store.dispatch(setConnected(false));
+    store.dispatch(setConnectionState("disconnected"));
   };
 
   dataChannelMessage = (ev: MessageEvent) => {
-    console.log(ev.data);
+    decodeFile(ev.data).then((file) => {
+      store.dispatch(addReceivedFile({ file }));
+    });
   };
 
-  sendMessage = () => {
-    this.dc.send("test");
+  sendBuffer = (buffer: ArrayBuffer) => {
+    this.dc.send(buffer);
   };
 
   createOffer = async () => {

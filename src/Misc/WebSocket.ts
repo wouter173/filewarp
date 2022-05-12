@@ -3,6 +3,7 @@ import store from "../State/Store";
 import { setLocalID, setPeerID, setPeerNickname } from "../State/IdentitySlice";
 import { setReceiveDialog } from "../State/DialogSlice";
 import webRTC from "./WebRTC";
+import WebRTC from "./WebRTC";
 
 class FWWebSocket {
   private ws: WebSocket;
@@ -45,11 +46,12 @@ class FWWebSocket {
         this.sendMessage(offer);
         break;
       case "offer":
-        const accept = await webRTC.createAccept(body.data.sdp);
+        await WebRTC.handleOffer(body.data.sdp);
+        const accept = await webRTC.createAccept();
         this.sendMessage(accept);
         break;
       case "accept":
-        webRTC.handleAccept(body.data.sdp);
+        await webRTC.handleAccept(body.data.sdp);
         break;
       case "nic":
         webRTC.handlePeerIceCandidate(body.data);

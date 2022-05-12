@@ -5,13 +5,12 @@ import { WSMessageMeta } from "../../Misc/Types";
 import webSocket from "../../Misc/WebSocket";
 import { setReceiveDialog } from "../../State/DialogSlice";
 import { IdentityPair, setPeerID, setPeerNickname } from "../../State/IdentitySlice";
+import { Store } from "../../State/Store";
 
 export default function ReceiveDialog() {
   const dispatch = useDispatch();
-  const identities = useSelector((state: { identity: IdentityPair }) => state.identity);
-  const isOpen = useSelector((state: { dialogs: { receiveDialog: boolean } }) => {
-    return state.dialogs.receiveDialog;
-  });
+  const identities = useSelector((state: Store) => state.identity);
+  const isOpen = useSelector((state: Store) => state.dialogs.receiveDialog);
 
   const handleAccept = async () => {
     const data: WSMessageMeta<{}> = {

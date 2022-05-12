@@ -1,4 +1,9 @@
-const DELIMITER = "\nENDMETA\n";
+import { addReceivedFile } from "../State/FileSlice";
+import store from "../State/Store";
+import WebRTC from "./WebRTC";
+
+const META_HEADER = "METADATA\n";
+const chunkSize = 16384;
 
 export type Metadata = {
   name: string;
@@ -7,8 +12,8 @@ export type Metadata = {
   lastModified: number;
 };
 
-export const encodeFile = async (file: File) => {
-  const content = await file.text();
+export const sendFile = async (file: File) => {
+  const dc = await WebRTC.createDataChannel();
 
   const metadata: Metadata = {
     name: file.name,
@@ -17,20 +22,60 @@ export const encodeFile = async (file: File) => {
     lastModified: file.lastModified,
   };
 
-  const body = new TextEncoder().encode(JSON.stringify(metadata) + DELIMITER + content);
-  return body.buffer;
+  const body = new TextEncoder().encode(META_HEADER + JSON.stringify(metadata));
+  dc.send(body);
+
+  let offset = 0;
+  const reader = new FileReader();
+  reader.addEventListener("load", (ev: ProgressEvent<FileReader>) => {
+    const res = ev.target!.result as ArrayBuffer;
+    dc.send(res);
+    offset += res.byteLength;
+
+    if (file.size > offset) {
+      const slice = file.slice(offset, offset + chunkSize);
+      reader.readAsArrayBuffer(slice);
+    }
+  });
+
+  const slice = file.slice(offset, offset + chunkSize);
+  reader.readAsArrayBuffer(slice);
 };
 
-export const decodeFile = async (blob: Blob): Promise<File> => {
-  const body = await blob.arrayBuffer();
-  const data = new TextDecoder().decode(body);
+let receivedData: { [label: string]: { metadata: Metadata; buffers: ArrayBuffer[] } } = {};
 
-  const [rawMeta, content] = data.split(DELIMITER);
-  const meta = JSON.parse(rawMeta) as Metadata;
+export const receiveFile = async (buffer: ArrayBuffer, label: string): Promise<void> => {
+  const decoder = new TextDecoder();
+  const header = buffer.slice(0, META_HEADER.length);
 
-  const file = new File([content], meta.name, { type: meta.type, lastModified: meta.lastModified });
-  //TODO: sizes dont match find out why
-  console.log(file.size, meta.size);
+  if (decoder.decode(header) == META_HEADER) {
+    const content = buffer.slice(META_HEADER.length);
+    const body = decoder.decode(content);
+    const metadata = JSON.parse(body) as Metadata;
 
-  return file;
+    receivedData[label] = { metadata, buffers: [] };
+    return;
+  }
+
+  const { metadata, buffers } = receivedData[label];
+
+  buffers.push(buffer);
+  const receiveBufferSize = buffers.reduce((acc, cur) => (acc += cur.byteLength), 0);
+
+  if (receiveBufferSize === metadata.size) {
+    const file = new File(buffers, metadata.name, {
+      type: metadata.type,
+      lastModified: metadata.lastModified,
+    });
+
+    store.dispatch(addReceivedFile({ file }));
+    WebRTC.removeDataChannel(label);
+  }
+};
+
+export const sendFiles = () => {
+  const files = store.getState().files.localFiles;
+  for (let file of files) {
+    sendFile(file);
+  }
 };

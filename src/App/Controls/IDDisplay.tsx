@@ -3,10 +3,10 @@ import { ClipboardCheckIcon } from "@heroicons/react/solid";
 import { useState } from "react";
 import { usePopper } from "react-popper";
 import { useSelector } from "react-redux";
-import { IdentityPair } from "../../State/IdentitySlice";
+import { Store } from "../../State/Store";
 
 export default function IDDisplay() {
-  const id = useSelector((state: { identity: IdentityPair }) => state.identity.local.ID);
+  const id = useSelector((state: Store) => state.identity.local.ID);
 
   const [referenceEl, setReferenceEl] = useState<HTMLElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);

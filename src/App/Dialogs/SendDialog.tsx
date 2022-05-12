@@ -1,24 +1,22 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import OtpInput from "react-otp-input";
 import { useDispatch, useSelector } from "react-redux";
 import { WSMessageMeta, WSProposeData } from "../../Misc/Types";
-import { encodeFile } from "../../Misc/utils";
-import WebRTC from "../../Misc/WebRTC";
 import webSocket from "../../Misc/WebSocket";
-import { ConnectionData, setConnectionState } from "../../State/ConnectionSlice";
+import { setConnectionState } from "../../State/ConnectionSlice";
 import { setSendDialog } from "../../State/DialogSlice";
-import { FilePair } from "../../State/FileSlice";
-import { IdentityPair, setPeerID } from "../../State/IdentitySlice";
+import { setPeerID } from "../../State/IdentitySlice";
+import { Store } from "../../State/Store";
 import Spinner from "../Spinner";
 
 export default function SendDialog() {
   const dispatch = useDispatch();
 
-  const isOpen = useSelector((state: { dialogs: { sendDialog: boolean } }) => state.dialogs.sendDialog);
-  const files = useSelector((state: { files: FilePair }) => state.files.localFiles);
-  const identities = useSelector((state: { identity: IdentityPair }) => state.identity);
-  const connectionState = useSelector((state: { connection: ConnectionData }) => state.connection.connectionState);
+  const isOpen = useSelector((state: Store) => state.dialogs.sendDialog);
+  const files = useSelector((state: Store) => state.files.localFiles);
+  const identities = useSelector((state: Store) => state.identity);
+  const connectionState = useSelector((state: Store) => state.connection.connectionState);
 
   const setIsOpen = (payload: boolean) => dispatch(setSendDialog(payload));
 
@@ -31,15 +29,6 @@ export default function SendDialog() {
     };
     webSocket.sendMessage(data);
   };
-
-  useEffect(() => {
-    console.log(connectionState);
-    if (connectionState == "connected" && files.length > 0) {
-      encodeFile(files[0]).then((buffer) => {
-        WebRTC.sendBuffer(buffer);
-      });
-    }
-  }, [connectionState]);
 
   return (
     <Transition show={isOpen} as={Fragment}>

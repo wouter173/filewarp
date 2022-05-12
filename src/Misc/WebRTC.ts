@@ -1,14 +1,13 @@
 import { setConnectionState } from "../State/ConnectionSlice";
-import { addReceivedFile } from "../State/FileSlice";
 import store from "../State/Store";
 import { iceServers } from "./ice";
 import { WSMessageData, WSMessageMeta } from "./Types";
-import { decodeFile } from "./utils";
+import { receiveFile, sendFiles } from "./utils";
 import webSocket from "./WebSocket";
 
 class WebRTC {
   private pc: RTCPeerConnection;
-  private dc!: RTCDataChannel;
+  private fileChannels: RTCDataChannel[] = [];
 
   constructor() {
     this.pc = new RTCPeerConnection({ iceServers });
@@ -41,39 +40,45 @@ class WebRTC {
   }
 
   handleDataChannel(ev: RTCDataChannelEvent) {
-    this.dc = ev.channel;
-    this.registerDataChannel();
+    let label = ev.channel.label;
+
+    if (label == "Amstel") {
+      return this.registerDataChannel(ev.channel);
+    }
+
+    ev.channel.binaryType = "arraybuffer";
+    ev.channel.addEventListener("message", (ev) => receiveFile(ev.data, label));
   }
 
-  registerDataChannel = () => {
-    this.dc.addEventListener("open", this.dataChannelOpen.bind(this));
-    this.dc.addEventListener("close", this.dataChannelClose.bind(this));
-    this.dc.addEventListener("message", this.dataChannelMessage.bind(this));
+  registerDataChannel = (channel: RTCDataChannel) => {
+    channel.addEventListener("open", () => store.dispatch(setConnectionState("connected")));
+    channel.addEventListener("close", () => store.dispatch(setConnectionState("disconnected")));
   };
 
-  dataChannelOpen = () => {
-    store.dispatch(setConnectionState("connected"));
-  };
+  createDataChannel = (): Promise<RTCDataChannel> => {
+    return new Promise((res) => {
+      const label = (Math.random() + 1).toString(36).substring(4);
+      const channel = this.pc.createDataChannel(label);
 
-  dataChannelClose = () => {
-    store.dispatch(setConnectionState("disconnected"));
-  };
-
-  dataChannelMessage = (ev: MessageEvent) => {
-    decodeFile(ev.data).then((file) => {
-      store.dispatch(addReceivedFile({ file }));
+      channel.addEventListener("open", () => {
+        this.fileChannels.push(channel);
+        channel.binaryType = "arraybuffer";
+        res(channel);
+      });
     });
   };
 
-  sendBuffer = (buffer: ArrayBuffer) => {
-    this.dc.send(buffer);
+  removeDataChannel = (label: string) => {
+    for (let channel of this.fileChannels) {
+      if (channel.label == label) channel.close();
+    }
   };
 
   createOffer = async () => {
     //datachannel creation has to be done before the creation of a offer otherwise ICE does not work
     //dont ask, I do not have the answer
-    this.dc = this.pc.createDataChannel("Amstel");
-    this.registerDataChannel();
+    let dc = this.pc.createDataChannel("Amstel");
+    this.registerDataChannel(dc);
 
     const offer = await this.pc.createOffer();
     await this.pc.setLocalDescription(offer);
@@ -86,10 +91,12 @@ class WebRTC {
     return data;
   };
 
-  createAccept = async (offer: RTCSessionDescription) => {
+  handleOffer = async (offer: RTCSessionDescription) => {
     const desc = new RTCSessionDescription(offer);
     await this.pc.setRemoteDescription(desc);
+  };
 
+  createAccept = async () => {
     const answer = await this.pc.createAnswer();
     await this.pc.setLocalDescription(answer);
 
@@ -103,7 +110,8 @@ class WebRTC {
 
   handleAccept = async (answer: RTCSessionDescription) => {
     await this.pc.setRemoteDescription(answer);
-    console.log(this.pc);
+
+    sendFiles();
   };
 }
 

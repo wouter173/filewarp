@@ -3,11 +3,12 @@ import { Popover } from "@headlessui/react";
 import { UserIcon } from "@heroicons/react/solid";
 import { usePopper } from "react-popper";
 import { useDispatch, useSelector } from "react-redux";
-import { IdentityPair, setLocalNickname } from "../../State/IdentitySlice";
+import { setLocalNickname } from "../../State/IdentitySlice";
+import { Store } from "../../State/Store";
 
 export default function IdentityConfig() {
   const dispatch = useDispatch();
-  const nickname = useSelector((state: { identity: IdentityPair }) => state.identity.local.nickname);
+  const nickname = useSelector((state: Store) => state.identity.local.nickname);
 
   const [referenceEl, setReferenceEl] = useState<HTMLElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);

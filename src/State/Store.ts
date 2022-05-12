@@ -1,8 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import identityReducer from "./IdentitySlice";
-import fileReducer from "./FileSlice";
-import dialogReducer from "./DialogSlice";
-import connectionReducer from "./ConnectionSlice";
+import identityReducer, { IdentityPair } from "./IdentitySlice";
+import fileReducer, { FilePair } from "./FileSlice";
+import dialogReducer, { DialogState } from "./DialogSlice";
+import connectionReducer, { ConnectionData } from "./ConnectionSlice";
+
+export type Store = {
+  files: FilePair;
+  identity: IdentityPair;
+  dialogs: DialogState;
+  connection: ConnectionData;
+};
 
 export default configureStore({
   reducer: {

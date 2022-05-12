@@ -1,10 +1,10 @@
 import { useState, UIEvent } from "react";
 import { useSelector } from "react-redux";
-import { FilePair } from "../State/FileSlice";
+import { Store } from "../State/Store";
 import FileEntry from "./FileEntry";
 
 export default function FileTray() {
-  const files = useSelector((state: { files: FilePair }) => state.files.localFiles);
+  const files = useSelector((state: Store) => state.files.localFiles);
   const [trayListBottom, setTrayListBottom] = useState(false);
 
   const trayListScroll = (ev: UIEvent<HTMLUListElement>) => {

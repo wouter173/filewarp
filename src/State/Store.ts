@@ -1,11 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
-import identityReducer, { IdentityPair } from "./IdentitySlice";
-import fileReducer, { FilePair } from "./FileSlice";
-import dialogReducer, { DialogState } from "./DialogSlice";
 import connectionReducer, { ConnectionData } from "./ConnectionSlice";
+import dialogReducer, { DialogState } from "./DialogSlice";
+import identityReducer, { IdentityPair } from "./IdentitySlice";
+import localFileReducer from "./LocalFileSlice";
+import receivedFilePartReducer from "./ReceivedFileSlice";
+import { FilePart } from "./ReceivedFileSlice";
 
 export type Store = {
-  files: FilePair;
+  localFiles: File[];
+  receivedFileParts: FilePart[];
   identity: IdentityPair;
   dialogs: DialogState;
   connection: ConnectionData;
@@ -13,7 +16,8 @@ export type Store = {
 
 export default configureStore({
   reducer: {
-    files: fileReducer,
+    localFiles: localFileReducer,
+    receivedFileParts: receivedFilePartReducer,
     identity: identityReducer,
     dialogs: dialogReducer,
     connection: connectionReducer,
@@ -23,7 +27,7 @@ export default configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActionPaths: ["payload.files", "payload.file"],
-        ignoredPaths: ["files"],
+        ignoredPaths: ["localFiles", "receivedFileParts"],
       },
     }),
 });

@@ -4,7 +4,7 @@ import { Store } from "../State/Store";
 import FileEntry from "./FileEntry";
 
 export default function FileTray() {
-  const files = useSelector((state: Store) => state.files.localFiles);
+  const files = useSelector((state: Store) => state.localFiles);
   const [trayListBottom, setTrayListBottom] = useState(false);
 
   const trayListScroll = (ev: UIEvent<HTMLUListElement>) => {

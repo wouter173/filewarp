@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { DocumentTextIcon, XIcon } from "@heroicons/react/outline";
 import { useDispatch } from "react-redux";
-import { removeLocalFile } from "../State/FileSlice";
+import { removeLocalFile } from "../State/LocalFileSlice";
 
 type Props = {
   file: File;

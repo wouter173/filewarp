@@ -19,3 +19,10 @@ export type WSMessageData = {
 export type WSProposeData = {
   nickname: string;
 };
+
+export type Metadata = {
+  name: string;
+  type: string;
+  size: number;
+  lastModified: number;
+};

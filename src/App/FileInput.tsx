@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FolderIcon } from "@heroicons/react/outline";
-import { addLocalFiles } from "../State/FileSlice";
+import { addLocalFiles } from "../State/LocalFileSlice";
 import { Store } from "../State/Store";
 
 export default function () {
@@ -9,7 +9,7 @@ export default function () {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useDispatch();
-  const fileNames = useSelector((state: Store) => state.files.localFiles.map((f) => f.name));
+  const fileNames = useSelector((state: Store) => state.localFiles.map((file) => file.name));
 
   const addFilesHandler = () => {
     if (inputRef.current) {

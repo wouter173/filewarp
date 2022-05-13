@@ -14,7 +14,7 @@ export default function SendDialog() {
   const dispatch = useDispatch();
 
   const isOpen = useSelector((state: Store) => state.dialogs.sendDialog);
-  const files = useSelector((state: Store) => state.files.localFiles);
+  const files = useSelector((state: Store) => state.localFiles);
   const identities = useSelector((state: Store) => state.identity);
   const connectionState = useSelector((state: Store) => state.connection.connectionState);
 

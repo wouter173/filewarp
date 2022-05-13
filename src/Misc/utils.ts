@@ -1,16 +1,10 @@
-import { addReceivedFile } from "../State/FileSlice";
+import { addFilePart, addFileToFilePart, appendBufferToFilePart } from "../State/ReceivedFileSlice";
 import store from "../State/Store";
+import { Metadata } from "./Types";
 import WebRTC from "./WebRTC";
 
 const META_HEADER = "METADATA\n";
 const chunkSize = 16384;
-
-export type Metadata = {
-  name: string;
-  type: string;
-  size: number;
-  lastModified: number;
-};
 
 export const sendFile = async (file: File) => {
   const dc = await WebRTC.createDataChannel();
@@ -42,9 +36,7 @@ export const sendFile = async (file: File) => {
   reader.readAsArrayBuffer(slice);
 };
 
-let receivedData: { [label: string]: { metadata: Metadata; buffers: ArrayBuffer[] } } = {};
-
-export const receiveFile = async (buffer: ArrayBuffer, label: string): Promise<void> => {
+export const receiveFile = async (buffer: ArrayBuffer, label: string) => {
   const decoder = new TextDecoder();
   const header = buffer.slice(0, META_HEADER.length);
 
@@ -52,14 +44,12 @@ export const receiveFile = async (buffer: ArrayBuffer, label: string): Promise<v
     const content = buffer.slice(META_HEADER.length);
     const body = decoder.decode(content);
     const metadata = JSON.parse(body) as Metadata;
-
-    receivedData[label] = { metadata, buffers: [] };
+    store.dispatch(addFilePart({ label, metadata }));
     return;
   }
 
-  const { metadata, buffers } = receivedData[label];
-
-  buffers.push(buffer);
+  store.dispatch(appendBufferToFilePart({ label, buffer }));
+  const { metadata, buffers } = store.getState().receivedFileParts.filter((filepart) => filepart.label == label)[0];
   const receiveBufferSize = buffers.reduce((acc, cur) => (acc += cur.byteLength), 0);
 
   if (receiveBufferSize === metadata.size) {
@@ -68,13 +58,13 @@ export const receiveFile = async (buffer: ArrayBuffer, label: string): Promise<v
       lastModified: metadata.lastModified,
     });
 
-    store.dispatch(addReceivedFile({ file }));
+    store.dispatch(addFileToFilePart({ label, file }));
     WebRTC.removeDataChannel(label);
   }
 };
 
-export const sendFiles = () => {
-  const files = store.getState().files.localFiles;
+export const sendAllFiles = () => {
+  const files = store.getState().localFiles;
   for (let file of files) {
     sendFile(file);
   }

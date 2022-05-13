@@ -2,7 +2,7 @@ import { setConnectionState } from "../State/ConnectionSlice";
 import store from "../State/Store";
 import { iceServers } from "./ice";
 import { WSMessageData, WSMessageMeta } from "./Types";
-import { receiveFile, sendFiles } from "./utils";
+import { receiveFile, sendAllFiles } from "./utils";
 import webSocket from "./WebSocket";
 
 class WebRTC {
@@ -111,7 +111,7 @@ class WebRTC {
   handleAccept = async (answer: RTCSessionDescription) => {
     await this.pc.setRemoteDescription(answer);
 
-    sendFiles();
+    sendAllFiles();
   };
 }
 

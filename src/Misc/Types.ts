@@ -18,6 +18,7 @@ export type WSMessageData = {
 
 export type WSProposeData = {
   nickname: string;
+  fileCount: number;
 };
 
 export type Metadata = {

@@ -1,6 +1,6 @@
-import { WSMessageBody, WSMessageEvent, WSMessageMeta } from "./Types";
+import { WSMessageBody, WSMessageEvent, WSMessageMeta, WSProposeData } from "./Types";
 import store from "../State/Store";
-import { setLocalID, setPeerID, setPeerNickname } from "../State/IdentitySlice";
+import { setLocalID, setPeerID, setPeerNickname, setPeerSendFileCount } from "../State/IdentitySlice";
 import { setReceiveDialog } from "../State/DialogSlice";
 import webRTC from "./WebRTC";
 import WebRTC from "./WebRTC";
@@ -36,9 +36,11 @@ class FWWebSocket {
 
       case "propose":
         if (store.getState().connection.connectionState == "connected") return;
+        const data = body.data as WSProposeData;
 
-        store.dispatch(setPeerNickname(body.data.nickname));
         store.dispatch(setPeerID(body.sen));
+        store.dispatch(setPeerNickname(data.nickname));
+        store.dispatch(setPeerSendFileCount(data.fileCount));
         store.dispatch(setReceiveDialog(true));
         break;
       case "engage":

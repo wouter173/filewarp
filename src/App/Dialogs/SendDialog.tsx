@@ -25,7 +25,7 @@ export default function SendDialog() {
 
     const data: WSMessageMeta<WSProposeData> = {
       type: "propose",
-      data: { nickname: identities.local.nickname },
+      data: { nickname: identities.local.nickname, fileCount: files.length },
     };
     webSocket.sendMessage(data);
   };

@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { WSMessageMeta } from "../../Misc/Types";
 import webSocket from "../../Misc/WebSocket";
 import { setReceiveDialog } from "../../State/DialogSlice";
-import { IdentityPair, setPeerID, setPeerNickname } from "../../State/IdentitySlice";
+import { setPeerID, setPeerNickname } from "../../State/IdentitySlice";
 import { Store } from "../../State/Store";
 
 export default function ReceiveDialog() {
   const dispatch = useDispatch();
-  const identities = useSelector((state: Store) => state.identity);
+  const peer = useSelector((state: Store) => state.identity.peer);
   const isOpen = useSelector((state: Store) => state.dialogs.receiveDialog);
 
   const handleAccept = async () => {
@@ -55,13 +55,14 @@ export default function ReceiveDialog() {
         >
           <div className="fixed bg-white w-auto h-min p-8 rounded-lg max-w-lg">
             <Dialog.Title as="h1" className="text-2xl font-semibold truncate">
-              {identities.peer.nickname ? identities.peer.nickname + "#" : null}
-              {identities.peer.ID}
+              {peer.nickname ? peer.nickname + "#" : null}
+              {peer.ID}
             </Dialog.Title>
             <div className="mb-4 w-full">
               <h2 className="text-lg">
                 wants to warp you
-                <b> 12 files</b>.
+                <b> {peer.sendFileCount}</b>
+                {peer.sendFileCount > 1 ? " files" : " file"}.
               </h2>
             </div>
             <p className="block text-xs truncate mb-6">

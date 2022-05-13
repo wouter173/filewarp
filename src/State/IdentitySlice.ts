@@ -3,12 +3,16 @@ import { Payload } from "./Types";
 
 export type IdentityPair = {
   local: Identity;
-  peer: Identity;
+  peer: PeerIdentity;
 };
 
 export type Identity = {
   nickname: string;
   ID: string;
+};
+
+export type PeerIdentity = Identity & {
+  sendFileCount: number;
 };
 
 const defaultIdentity: Identity = {
@@ -32,8 +36,11 @@ export const identitySlice = createSlice({
     setPeerID(state, action: Payload<string>) {
       state.peer.ID = action.payload;
     },
+    setPeerSendFileCount(state, action: Payload<number>) {
+      state.peer.sendFileCount = action.payload;
+    },
   },
 });
 
-export const { setLocalNickname, setLocalID, setPeerNickname, setPeerID } = identitySlice.actions;
+export const { setLocalNickname, setLocalID, setPeerNickname, setPeerID, setPeerSendFileCount } = identitySlice.actions;
 export default identitySlice.reducer;

@@ -41,7 +41,7 @@ export default function ReceivedFileDisplay() {
           {filePartList.length > 0 ? (
             <ul>
               {filePartList.map((filepart) => (
-                <li className=" border-slate-200 last:border-transparent">
+                <li key={filepart.label} className=" border-slate-200 last:border-transparent">
                   <a
                     className="flex items-center w-80 my-1 p-1 rounded-md hover:bg-white transition-colors"
                     href={window.URL.createObjectURL(filepart.file || new Blob())}

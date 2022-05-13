@@ -1,6 +1,6 @@
 import { addFilePart, addFileToFilePart, appendBufferToFilePart } from "../State/ReceivedFileSlice";
 import store from "../State/Store";
-import { Metadata } from "./Types";
+import { Metadata } from "../State/Types";
 import WebRTC from "./WebRTC";
 
 const META_HEADER = "METADATA\n";

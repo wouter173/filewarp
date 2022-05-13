@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Metadata } from "../Misc/Types";
-import { Payload } from "./Types";
+import { Payload, Metadata } from "./Types";
 
 export type FilePart = {
   label: string;

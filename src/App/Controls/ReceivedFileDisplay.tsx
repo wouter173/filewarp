@@ -4,6 +4,8 @@ import { useState } from "react";
 import { usePopper } from "react-popper";
 import { useSelector } from "react-redux";
 import { Store } from "../../State/Store";
+import Loader from "../Loader";
+import Spinner from "../Spinner";
 
 export default function ReceivedFileDisplay() {
   const filePartList = useSelector((state: Store) => state.receivedFileParts);
@@ -49,7 +51,19 @@ export default function ReceivedFileDisplay() {
                   >
                     <DocumentTextIcon className="flex-shrink-0 block h-5 w-5 text-indigo-400 mr-1 ml-1" />
                     <p className="overflow-hidden overflow-ellipsis whitespace-nowrap mr-4">{filepart.metadata.name}</p>
-                    <DownloadIcon className="flex-shrink-0 block rounded-md w-8 h-8 p-[6px] bg-white ml-auto text-indigo-500" />
+                    <div className="flex-shrink-0 block rounded-md w-8 h-8 p-[6px] bg-white ml-auto">
+                      {filepart.file ? (
+                        <DownloadIcon className="text-indigo-500" />
+                      ) : (
+                        <Loader
+                          bgClassList="fill-transparent stroke-slate-300"
+                          fgClassList="fill-transparent stroke-indigo-600"
+                          value={filepart.buffers.reduce((a, c) => a + c.byteLength, 0)}
+                          max={filepart.metadata.size}
+                          strokeWidth={4}
+                        />
+                      )}
+                    </div>
                   </a>
                   <hr className="border-b border-inherit" />
                 </li>

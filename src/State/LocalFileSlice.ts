@@ -5,12 +5,12 @@ export const localFileSlice = createSlice({
   name: "Files",
   initialState: [] as File[],
   reducers: {
-    addLocalFiles: (state, action: Payload<{ files: File[] }>) => {
+    addLocalFiles: (state: File[], action: Payload<{ files: File[] }>) => {
       return [...state, ...action.payload.files];
     },
 
-    removeLocalFile: (state, action: Payload<{ file: File }>) => {
-      state = state.filter((file) => file.name != action.payload.file.name);
+    removeLocalFile: (state: File[], action: Payload<{ file: File }>) => {
+      return state.filter((file: File) => file.name != action.payload.file.name);
     },
   },
 });

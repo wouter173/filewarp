@@ -3,9 +3,10 @@ import { Fragment } from "react";
 import OtpInput from "react-otp-input";
 import { useDispatch, useSelector } from "react-redux";
 import { WSMessageMeta, WSProposeData } from "../../Misc/Types";
+import WebRTC from "../../Misc/WebRTC";
 import webSocket from "../../Misc/WebSocket";
 import { setConnectionState } from "../../State/ConnectionSlice";
-import { setSendDialog } from "../../State/DialogSlice";
+import { setConfirmDialog, setSendDialog } from "../../State/DialogSlice";
 import { setPeerID } from "../../State/IdentitySlice";
 import { Store } from "../../State/Store";
 import Spinner from "../Spinner";
@@ -13,7 +14,7 @@ import Spinner from "../Spinner";
 export default function SendDialog() {
   const dispatch = useDispatch();
 
-  const isOpen = useSelector((state: Store) => state.dialogs.sendDialog);
+  const isOpen = useSelector((state: Store) => state.dialogs.sendDialog.open);
   const files = useSelector((state: Store) => state.localFiles);
   const identities = useSelector((state: Store) => state.identity);
   const connectionState = useSelector((state: Store) => state.connection.connectionState);
@@ -30,10 +31,17 @@ export default function SendDialog() {
     webSocket.sendMessage(data);
   };
 
+  const handleClose = () => {
+    setIsOpen(false);
+    if (connectionState != "disconnected") {
+      dispatch(setConfirmDialog(true));
+    }
+  };
+
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
-        onClose={() => setIsOpen(false)}
+        onClose={handleClose}
         className="z-30 fixed flex items-center justify-center inset-0 overflow-y-auto h-screen w-screen"
       >
         <Transition.Child

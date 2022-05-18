@@ -3,14 +3,14 @@ import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { WSMessageMeta } from "../../Misc/Types";
 import webSocket from "../../Misc/WebSocket";
-import { setReceiveDialog } from "../../State/DialogSlice";
+import { setEngageDialog } from "../../State/DialogSlice";
 import { setPeerID, setPeerNickname } from "../../State/IdentitySlice";
 import { Store } from "../../State/Store";
 
-export default function ReceiveDialog() {
+export default function EngageDialog() {
   const dispatch = useDispatch();
   const peer = useSelector((state: Store) => state.identity.peer);
-  const isOpen = useSelector((state: Store) => state.dialogs.receiveDialog);
+  const isOpen = useSelector((state: Store) => state.dialogs.engageDialog.open);
 
   const handleAccept = async () => {
     const data: WSMessageMeta<{}> = {
@@ -18,11 +18,11 @@ export default function ReceiveDialog() {
       data: {},
     };
     webSocket.sendMessage(data);
-    dispatch(setReceiveDialog(false));
+    dispatch(setEngageDialog(false));
   };
 
   const handleIgnore = () => {
-    dispatch(setReceiveDialog(false));
+    dispatch(setEngageDialog(false));
     dispatch(setPeerNickname(""));
     dispatch(setPeerID(""));
   };

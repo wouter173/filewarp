@@ -1,6 +1,8 @@
 import { useDispatch } from "react-redux";
 import { setSendDialog } from "../State/DialogSlice";
-import ReceiveDialog from "./Dialogs/ReceiveDialog";
+import ConfirmDialog from "./Dialogs/ConfirmationDialog";
+import EngageDialog from "./Dialogs/EngageDialog";
+import InformationDialog from "./Dialogs/InformationDialog";
 import SendDialog from "./Dialogs/SendDialog";
 import FileInput from "./FileInput";
 import FileTray from "./FileTray";
@@ -22,8 +24,10 @@ export default function App() {
           Next
         </button>
       </main>
-      <ReceiveDialog />
+      <EngageDialog />
       <SendDialog />
+      <ConfirmDialog />
+      <InformationDialog />
     </section>
   );
 }

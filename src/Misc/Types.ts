@@ -21,6 +21,10 @@ export type WSProposeData = {
   fileCount: number;
 };
 
+export type WRTCMessageBody = {
+  type: "close";
+};
+
 export type Metadata = {
   name: string;
   type: string;

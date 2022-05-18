@@ -1,40 +1,32 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Payload, Metadata } from "./Types";
+import { Metadata } from "../Misc/Types";
+import { Payload } from "./Types";
 
-export type FilePart = {
-  label: string;
+export type StateType = { [label: string]: ReceivedFileEntry };
+export type ReceivedFileEntry = {
+  progress: number;
+  fileUrl: string | null;
   metadata: Metadata;
-  buffers: ArrayBuffer[];
-  file: File | null;
 };
 
-export const receivedFilePartSlice = createSlice({
+type recFilePayload<T> = Payload<{ label: string; data: T }>;
+
+export const receivedFileEntriesSlice = createSlice({
   name: "Files",
-  initialState: [] as FilePart[],
+  initialState: {} as StateType,
   reducers: {
-    addFilePart: (state, action: Payload<{ label: string; metadata: Metadata }>) => {
-      const { label, metadata } = action.payload;
-      return [...state, { label, metadata, buffers: [], file: null }];
+    addReceivedFileEntry(state: StateType, action: recFilePayload<Metadata>) {
+      state[action.payload.label] = { fileUrl: null, progress: 0, metadata: action.payload.data };
     },
-
-    appendBufferToFilePart: (state, action: Payload<{ label: string; buffer: ArrayBuffer }>) => {
-      const { label, buffer } = action.payload;
-      const filepart = state.filter((filepart) => filepart.label == label)[0];
-      filepart.buffers.push(buffer);
+    setReceivedFileEntryProgress(state: StateType, action: recFilePayload<number>) {
+      state[action.payload.label].progress = action.payload.data;
     },
-
-    addFileToFilePart: (state, action: Payload<{ label: string; file: File }>) => {
-      const { label, file } = action.payload;
-      const filepart = state.filter((filepart) => filepart.label == label)[0];
-      filepart.file = file;
-    },
-
-    removeFilePart: (state, action: Payload<{ label: string }>) => {
-      const { label } = action.payload;
-      return state.filter((filepart) => filepart.label != label);
+    setReceivedFileEntryFileUrl(state: StateType, action: recFilePayload<string>) {
+      state[action.payload.label].fileUrl = action.payload.data;
     },
   },
 });
 
-export const { addFilePart, appendBufferToFilePart, addFileToFilePart, removeFilePart } = receivedFilePartSlice.actions;
-export default receivedFilePartSlice.reducer;
+export const { addReceivedFileEntry, setReceivedFileEntryProgress, setReceivedFileEntryFileUrl } =
+  receivedFileEntriesSlice.actions;
+export default receivedFileEntriesSlice.reducer;

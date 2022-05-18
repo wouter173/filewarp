@@ -3,12 +3,11 @@ import connectionReducer, { ConnectionData } from "./ConnectionSlice";
 import dialogReducer, { DialogState } from "./DialogSlice";
 import identityReducer, { IdentityPair } from "./IdentitySlice";
 import localFileReducer from "./LocalFileSlice";
-import receivedFilePartReducer from "./ReceivedFileSlice";
-import { FilePart } from "./ReceivedFileSlice";
+import receivedFileEntriesReducer, { StateType as ReceivedFileEntryStateType } from "./ReceivedFileSlice";
 
 export type Store = {
   localFiles: File[];
-  receivedFileParts: FilePart[];
+  receivedFileEntries: ReceivedFileEntryStateType;
   identity: IdentityPair;
   dialogs: DialogState;
   connection: ConnectionData;
@@ -17,7 +16,7 @@ export type Store = {
 export default configureStore({
   reducer: {
     localFiles: localFileReducer,
-    receivedFileParts: receivedFilePartReducer,
+    receivedFileEntries: receivedFileEntriesReducer,
     identity: identityReducer,
     dialogs: dialogReducer,
     connection: connectionReducer,
@@ -26,8 +25,8 @@ export default configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActionPaths: ["payload.files", "payload.file"],
-        ignoredPaths: ["localFiles", "receivedFileParts"],
+        ignoredActionPaths: ["payload.files", "payload.file", "payload.buffer"],
+        ignoredPaths: ["localFiles", "receivedFileEntries"],
       },
     }),
 });

@@ -20,3 +20,17 @@ export type WSProposeData = {
   nickname: string;
   fileCount: number;
 };
+
+export type Metadata = {
+  name: string;
+  type: string;
+  size: number;
+  lastModified: number;
+};
+
+export type FilePart = {
+  metadata: Metadata;
+  buffers: ArrayBuffer[];
+  bufferSize: number;
+  file: File | null;
+};

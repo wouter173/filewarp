@@ -1,6 +1,11 @@
-import { addFilePart, addFileToFilePart, appendBufferToFilePart } from "../State/ReceivedFileSlice";
+import {
+  addReceivedFileEntry,
+  ReceivedFileEntry,
+  setReceivedFileEntryFileUrl,
+  setReceivedFileEntryProgress,
+} from "../State/ReceivedFileSlice";
 import store from "../State/Store";
-import { Metadata } from "../State/Types";
+import { FilePart, Metadata } from "./Types";
 import WebRTC from "./WebRTC";
 
 const META_HEADER = "METADATA\n";
@@ -22,19 +27,27 @@ export const sendFile = async (file: File) => {
   let offset = 0;
   const reader = new FileReader();
   reader.addEventListener("load", (ev: ProgressEvent<FileReader>) => {
+    //sometimes the webrtc datachannel buffer is full,
+    //in which case we wait for 20ms and try again
+    if (dc.bufferedAmount > 0) return setTimeout(readBuffer, 20);
     const res = ev.target!.result as ArrayBuffer;
     dc.send(res);
     offset += res.byteLength;
 
     if (file.size > offset) {
-      const slice = file.slice(offset, offset + chunkSize);
-      reader.readAsArrayBuffer(slice);
+      readBuffer();
     }
   });
 
-  const slice = file.slice(offset, offset + chunkSize);
-  reader.readAsArrayBuffer(slice);
+  const readBuffer = () => {
+    const slice = file.slice(offset, offset + chunkSize);
+    reader.readAsArrayBuffer(slice);
+  };
+
+  readBuffer();
 };
+
+const fileparts: { [label: string]: FilePart } = {};
 
 export const receiveFile = async (buffer: ArrayBuffer, label: string) => {
   const decoder = new TextDecoder();
@@ -44,21 +57,29 @@ export const receiveFile = async (buffer: ArrayBuffer, label: string) => {
     const content = buffer.slice(META_HEADER.length);
     const body = decoder.decode(content);
     const metadata = JSON.parse(body) as Metadata;
-    store.dispatch(addFilePart({ label, metadata }));
+
+    fileparts[label] = { metadata, bufferSize: 0, buffers: [], file: null };
+    store.dispatch(addReceivedFileEntry({ label, data: metadata }));
+
     return;
   }
 
-  store.dispatch(appendBufferToFilePart({ label, buffer }));
-  const { metadata, buffers } = store.getState().receivedFileParts.filter((filepart) => filepart.label == label)[0];
-  const receiveBufferSize = buffers.reduce((acc, cur) => (acc += cur.byteLength), 0);
+  const metadata = fileparts[label].metadata;
+  const buffers = fileparts[label].buffers;
 
-  if (receiveBufferSize === metadata.size) {
+  buffers.push(buffer);
+  fileparts[label].bufferSize += buffer.byteLength;
+
+  store.dispatch(setReceivedFileEntryProgress({ label, data: (fileparts[label].bufferSize / metadata.size) * 100 }));
+
+  if (fileparts[label].bufferSize === metadata.size) {
     const file = new File(buffers, metadata.name, {
       type: metadata.type,
       lastModified: metadata.lastModified,
     });
 
-    store.dispatch(addFileToFilePart({ label, file }));
+    const objectUrl = window.URL.createObjectURL(file);
+    store.dispatch(setReceivedFileEntryFileUrl({ label, data: objectUrl }));
     WebRTC.removeDataChannel(label);
   }
 };

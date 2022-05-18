@@ -5,10 +5,9 @@ import { usePopper } from "react-popper";
 import { useSelector } from "react-redux";
 import { Store } from "../../State/Store";
 import Loader from "../Loader";
-import Spinner from "../Spinner";
 
 export default function ReceivedFileDisplay() {
-  const filePartList = useSelector((state: Store) => state.receivedFileParts);
+  const recFileEntryList = useSelector((state: Store) => state.receivedFileEntries);
 
   const [referenceEl, setReferenceEl] = useState<HTMLElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
@@ -40,26 +39,26 @@ export default function ReceivedFileDisplay() {
           className="absolute block w-4 h-4 border-8 border-transparent border-b-slate-100"
         />
         <div className="mt-4 bg-slate-100 p-2 shadow rounded-md text-black">
-          {filePartList.length > 0 ? (
+          {Object.entries(recFileEntryList).length > 0 ? (
             <ul>
-              {filePartList.map((filepart) => (
-                <li key={filepart.label} className=" border-slate-200 last:border-transparent">
+              {Object.entries(recFileEntryList).map(([label, entry]) => (
+                <li key={label} className=" border-slate-200 last:border-transparent">
                   <a
                     className="flex items-center w-80 my-1 p-1 rounded-md hover:bg-white transition-colors"
-                    href={window.URL.createObjectURL(filepart.file || new Blob())}
-                    download={filepart.metadata.name}
+                    href={entry.fileUrl || ""}
+                    download={entry.metadata.name}
                   >
                     <DocumentTextIcon className="flex-shrink-0 block h-5 w-5 text-indigo-400 mr-1 ml-1" />
-                    <p className="overflow-hidden overflow-ellipsis whitespace-nowrap mr-4">{filepart.metadata.name}</p>
+                    <p className="overflow-hidden overflow-ellipsis whitespace-nowrap mr-4">{entry.metadata.name}</p>
                     <div className="flex-shrink-0 block rounded-md w-8 h-8 p-[6px] bg-white ml-auto">
-                      {filepart.file ? (
+                      {entry.fileUrl ? (
                         <DownloadIcon className="text-indigo-500" />
                       ) : (
                         <Loader
                           bgClassList="fill-transparent stroke-slate-300"
                           fgClassList="fill-transparent stroke-indigo-600"
-                          value={filepart.buffers.reduce((a, c) => a + c.byteLength, 0)}
-                          max={filepart.metadata.size}
+                          value={entry.progress}
+                          max={100}
                           strokeWidth={4}
                         />
                       )}

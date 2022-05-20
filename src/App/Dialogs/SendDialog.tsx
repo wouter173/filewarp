@@ -3,10 +3,9 @@ import { Fragment } from "react";
 import OtpInput from "react-otp-input";
 import { useDispatch, useSelector } from "react-redux";
 import { WSMessageMeta, WSProposeData } from "../../Misc/Types";
-import WebRTC from "../../Misc/WebRTC";
 import webSocket from "../../Misc/WebSocket";
 import { setConnectionState } from "../../State/ConnectionSlice";
-import { setConfirmDialog, setSendDialog } from "../../State/DialogSlice";
+import { setDialogOpen } from "../../State/DialogSlice";
 import { setPeerID } from "../../State/IdentitySlice";
 import { Store } from "../../State/Store";
 import Spinner from "../Spinner";
@@ -19,7 +18,7 @@ export default function SendDialog() {
   const identities = useSelector((state: Store) => state.identity);
   const connectionState = useSelector((state: Store) => state.connection.connectionState);
 
-  const setIsOpen = (payload: boolean) => dispatch(setSendDialog(payload));
+  const setIsOpen = (open: boolean) => dispatch(setDialogOpen({ dialog: "sendDialog", open }));
 
   const handleSend = async () => {
     dispatch(setConnectionState("connecting"));
@@ -34,7 +33,7 @@ export default function SendDialog() {
   const handleClose = () => {
     setIsOpen(false);
     if (connectionState != "disconnected") {
-      dispatch(setConfirmDialog(true));
+      dispatch(setDialogOpen({ dialog: "confirmationDialog", open: true }));
     }
   };
 

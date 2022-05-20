@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { WSMessageMeta } from "../../Misc/Types";
 import webSocket from "../../Misc/WebSocket";
-import { setEngageDialog } from "../../State/DialogSlice";
+import { setDialogOpen } from "../../State/DialogSlice";
 import { setPeerID, setPeerNickname } from "../../State/IdentitySlice";
 import { Store } from "../../State/Store";
 
@@ -18,11 +18,11 @@ export default function EngageDialog() {
       data: {},
     };
     webSocket.sendMessage(data);
-    dispatch(setEngageDialog(false));
+    dispatch(setDialogOpen({ dialog: "engageDialog", open: false }));
   };
 
   const handleIgnore = () => {
-    dispatch(setEngageDialog(false));
+    dispatch(setDialogOpen({ dialog: "engageDialog", open: false }));
     dispatch(setPeerNickname(""));
     dispatch(setPeerID(""));
   };

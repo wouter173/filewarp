@@ -1,7 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setInformationDialog } from "../../State/DialogSlice";
+import { setDialogOpen } from "../../State/DialogSlice";
 import { Store } from "../../State/Store";
 
 export default function InformationDialog() {
@@ -9,7 +9,7 @@ export default function InformationDialog() {
   const isOpen = useSelector((state: Store) => state.dialogs.informationDialog.open);
 
   const handleClose = () => {
-    dispatch(setInformationDialog(false));
+    dispatch(setDialogOpen({ dialog: "informationDialog", open: false }));
   };
 
   return (

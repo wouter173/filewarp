@@ -1,7 +1,7 @@
 import { WSMessageBody, WSMessageEvent, WSMessageMeta, WSProposeData } from "./Types";
 import store from "../State/Store";
 import { setLocalID, setPeerID, setPeerNickname, setPeerSendFileCount } from "../State/IdentitySlice";
-import { setEngageDialog } from "../State/DialogSlice";
+import { setDialogOpen } from "../State/DialogSlice";
 import webRTC from "./WebRTC";
 
 class FWWebSocket {
@@ -40,7 +40,7 @@ class FWWebSocket {
         store.dispatch(setPeerID(body.sen));
         store.dispatch(setPeerNickname(data.nickname));
         store.dispatch(setPeerSendFileCount(data.fileCount));
-        store.dispatch(setEngageDialog(true));
+        store.dispatch(setDialogOpen({ dialog: "engageDialog", open: true }));
         break;
       case "engage":
         const offer = await webRTC.createOffer();

@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import connectionReducer, { ConnectionData } from "./ConnectionSlice";
-import dialogReducer, { DialogsState } from "./DialogSlice";
+import dialogReducer, { Dialogs } from "./DialogSlice";
 import identityReducer, { IdentityPair } from "./IdentitySlice";
 import localFileReducer from "./LocalFileSlice";
 import receivedFileEntriesReducer, { StateType as ReceivedFileEntryStateType } from "./ReceivedFileSlice";
@@ -9,7 +9,7 @@ export type Store = {
   localFiles: File[];
   receivedFileEntries: ReceivedFileEntryStateType;
   identity: IdentityPair;
-  dialogs: DialogsState;
+  dialogs: Dialogs;
   connection: ConnectionData;
 };
 

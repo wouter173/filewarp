@@ -8,7 +8,8 @@
 - [ ] don't let a user press 'next' on the main screen when the user is already connected
 - [ ] don't let a user press 'next' on the main screen when there are 0 files to be sent
 - [ ] fix the information adn confirmation dialogs
-- [ ] mast progress bar as the receivedFileDisplay button
+- [ ] mask progress bar as the receivedFileDisplay button
+- [ ] responsiveness
 - [x] downloading bar per file in received file display
 - [x] automatically close & reset webrtc when all files are sent
 - [x] detached local and received files in redux

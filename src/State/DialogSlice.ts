@@ -8,55 +8,35 @@ export type DialogState = {
   data?: DialogBody;
 };
 
-export type DialogsState = {
+export type Dialogs = {
   sendDialog: DialogState;
   engageDialog: DialogState;
   confirmationDialog: DialogState;
   informationDialog: DialogState;
 };
-const initialState = () => ({
+
+type DialogReducerPayload<T> = Payload<T & { dialog: keyof Dialogs }>;
+
+const initialState: Dialogs = {
   sendDialog: { open: false },
   engageDialog: { open: false },
   confirmationDialog: { open: false },
   informationDialog: { open: false },
-});
+};
 
 export const DialogSlice = createSlice({
   name: "Dialogs",
-  initialState: initialState() as DialogsState,
+  initialState,
   reducers: {
-    setSendDialog(_, action: Payload<boolean>) {
-      return { ...initialState(), sendDialog: { open: action.payload } };
+    setDialogOpen(state: Dialogs, action: DialogReducerPayload<{ open: boolean }>) {
+      state[action.payload.dialog].open = action.payload.open;
     },
 
-    setEngageDialog(_, action: Payload<boolean>) {
-      return { ...initialState(), engageDialog: { open: action.payload } };
-    },
-
-    setConfirmDialog(_, action: Payload<boolean>) {
-      return { ...initialState(), confirmationDialog: { open: action.payload } };
-    },
-
-    setConfirmMessage(state: DialogsState, action: Payload<DialogBody>) {
-      state.confirmationDialog.data = action.payload;
-    },
-
-    setInformationDialog(_, action: Payload<boolean>) {
-      return { ...initialState(), informationDialog: { open: action.payload } };
-    },
-
-    setInformationMessage(state: DialogsState, action: Payload<DialogBody>) {
-      state.informationDialog.data = action.payload;
+    setDialogMessage(state: Dialogs, action: DialogReducerPayload<{ data: DialogBody }>) {
+      state[action.payload.dialog].data = action.payload.data;
     },
   },
 });
 
-export const {
-  setSendDialog,
-  setEngageDialog,
-  setConfirmDialog,
-  setConfirmMessage,
-  setInformationDialog,
-  setInformationMessage,
-} = DialogSlice.actions;
+export const { setDialogOpen, setDialogMessage } = DialogSlice.actions;
 export default DialogSlice.reducer;

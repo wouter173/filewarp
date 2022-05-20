@@ -5,7 +5,7 @@ import { WRTCMessageBody, WSMessageData, WSMessageMeta } from "./Types";
 import { receiveFile, sendAllFiles } from "./FileHandlers";
 import webSocket from "./WebSocket";
 import { GenID } from "./utils";
-import { setInformationDialog } from "../State/DialogSlice";
+import { setDialogOpen } from "../State/DialogSlice";
 
 class WebRTC {
   private pc!: RTCPeerConnection;
@@ -36,7 +36,7 @@ class WebRTC {
         this.createPeerConnection();
         break;
       case "connecting":
-        store.dispatch(setInformationDialog(true));
+        store.dispatch(setDialogOpen({ dialog: "informationDialog", open: true }));
         break;
       default:
         console.log("ConnectionStateChange");

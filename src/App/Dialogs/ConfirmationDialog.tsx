@@ -2,7 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import WebRTC from "../../Misc/WebRTC";
-import { setConfirmDialog, setSendDialog } from "../../State/DialogSlice";
+import { setDialogOpen } from "../../State/DialogSlice";
 import { setPeerID, setPeerNickname } from "../../State/IdentitySlice";
 import { Store } from "../../State/Store";
 
@@ -11,14 +11,14 @@ export default function ConfirmDialog() {
   const isOpen = useSelector((state: Store) => state.dialogs.confirmationDialog.open);
 
   const handleConfirm = () => {
-    dispatch(setConfirmDialog(false));
+    dispatch(setDialogOpen({ dialog: "confirmationDialog", open: false }));
     dispatch(setPeerNickname(""));
     dispatch(setPeerID(""));
     WebRTC.close();
   };
 
   const handleCancel = () => {
-    dispatch(setSendDialog(true));
+    dispatch(setDialogOpen({ dialog: "sendDialog", open: true }));
   };
 
   return (

@@ -1,11 +1,11 @@
 import { setConnectionState } from "../State/ConnectionSlice";
 import store from "../State/Store";
 import { iceServers } from "./ice";
-import { WRTCMessageBody, WSMessageData, WSMessageMeta } from "./Types";
+import { WSMessageData, WSMessageMeta } from "./Types";
 import { receiveFile, sendAllFiles } from "./FileHandlers";
 import webSocket from "./WebSocket";
-import { GenID } from "./utils";
-import { setDialogOpen } from "../State/DialogSlice";
+import { GenID, informFailure, informSuccess } from "./utils";
+import { resetPeer } from "../State/IdentitySlice";
 
 class WebRTC {
   private pc!: RTCPeerConnection;
@@ -33,10 +33,18 @@ class WebRTC {
         break;
       case "disconnected":
         console.log("disconnected");
+        break;
+      case "closed":
+        console.log("webrtc closed");
+        informFailure();
+        store.dispatch(setConnectionState("disconnected"));
         this.createPeerConnection();
         break;
-      case "connecting":
-        store.dispatch(setDialogOpen({ dialog: "informationDialog", open: true }));
+      case "failed":
+        console.log("webrtc failed");
+        informFailure();
+        store.dispatch(setConnectionState("disconnected"));
+        this.createPeerConnection();
         break;
       default:
         console.log("ConnectionStateChange");
@@ -63,6 +71,7 @@ class WebRTC {
       return this.registerAmstel(ev.channel);
     }
 
+    this.fileChannels.push(ev.channel);
     ev.channel.binaryType = "arraybuffer";
     ev.channel.addEventListener("message", (ev) => receiveFile(ev.data, label));
   }
@@ -70,23 +79,15 @@ class WebRTC {
   registerAmstel(channel: RTCDataChannel) {
     this.amstel = channel;
     channel.addEventListener("open", () => store.dispatch(setConnectionState("connected")));
-    channel.addEventListener("close", () => store.dispatch(setConnectionState("disconnected")));
-    channel.addEventListener("message", this.onAmstelMessage.bind(this));
+    channel.addEventListener("close", () => this.close(true));
+    channel.addEventListener("error", (e) => console.log("amstel error", e));
   }
 
-  onAmstelMessage(ev: MessageEvent) {
-    const body = JSON.parse(ev.data) as WRTCMessageBody;
-    if (body.type == "close") {
-      this.close();
-    }
+  closeAmstel() {
+    this.amstel.close();
   }
 
-  sendAmstelMessage(body: WRTCMessageBody) {
-    const data = JSON.stringify(body);
-    this.amstel.send(data);
-  }
-
-  createDataChannel(): Promise<RTCDataChannel> {
+  createFileChannel(): Promise<RTCDataChannel> {
     return new Promise((res) => {
       const label = GenID();
       const channel = this.pc.createDataChannel(label);
@@ -101,7 +102,11 @@ class WebRTC {
 
   removeDataChannel(label: string) {
     for (let channel of this.fileChannels) {
-      if (channel.label == label) channel.close();
+      if (channel.label != label) continue;
+      channel.close();
+      this.fileChannels.splice(this.fileChannels.indexOf(channel), 1);
+
+      console.log(this.fileChannels);
     }
   }
 
@@ -145,9 +150,15 @@ class WebRTC {
     sendAllFiles();
   }
 
-  close() {
+  close(success?: boolean) {
     this.pc.close();
     this.createPeerConnection();
+
+    if (success) informSuccess();
+    else informFailure();
+
+    store.dispatch(setConnectionState("disconnected"));
+    store.dispatch(resetPeer());
   }
 }
 

@@ -18,8 +18,6 @@ export default function SendDialog() {
   const identities = useSelector((state: Store) => state.identity);
   const connectionState = useSelector((state: Store) => state.connection.connectionState);
 
-  const setIsOpen = (open: boolean) => dispatch(setDialogOpen({ dialog: "sendDialog", open }));
-
   const handleSend = async () => {
     dispatch(setConnectionState("connecting"));
 
@@ -31,7 +29,6 @@ export default function SendDialog() {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
     if (connectionState != "disconnected") {
       dispatch(setDialogOpen({ dialog: "confirmationDialog", open: true }));
     }

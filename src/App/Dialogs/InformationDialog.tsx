@@ -6,7 +6,10 @@ import { Store } from "../../State/Store";
 
 export default function InformationDialog() {
   const dispatch = useDispatch();
-  const isOpen = useSelector((state: Store) => state.dialogs.informationDialog.open);
+  const dialogState = useSelector((state: Store) => state.dialogs.informationDialog);
+
+  const isOpen = dialogState.open;
+  const { title, body } = dialogState.data || { title: "placeholder title", data: "placeholder body" };
 
   const handleClose = () => {
     dispatch(setDialogOpen({ dialog: "informationDialog", open: false }));
@@ -40,9 +43,9 @@ export default function InformationDialog() {
         >
           <div className="fixed bg-white w-auto h-min p-8 rounded-lg max-w-sm">
             <Dialog.Title as="h1" className="text-2xl font-semibold flex-wrap">
-              Peer Disconnected.
+              {title}
             </Dialog.Title>
-            <p className="block text-xs truncate my-6">you are now able to open another warp.</p>
+            <p className="block text-sm my-6">{body}</p>
             <div className="flex w-full text-sm font-bold gap-2">
               <button onClick={handleClose} className="block bg-indigo-500 px-3 py-2 rounded-md text-white w-full">
                 Ok

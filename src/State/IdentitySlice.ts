@@ -39,8 +39,12 @@ export const identitySlice = createSlice({
     setPeerSendFileCount(state, action: Payload<number>) {
       state.peer.sendFileCount = action.payload;
     },
+    resetPeer(state: IdentityPair) {
+      state.peer = { ID: "", nickname: "", sendFileCount: 0 };
+    },
   },
 });
 
-export const { setLocalNickname, setLocalID, setPeerNickname, setPeerID, setPeerSendFileCount } = identitySlice.actions;
+export const { setLocalNickname, setLocalID, setPeerNickname, setPeerID, setPeerSendFileCount, resetPeer } =
+  identitySlice.actions;
 export default identitySlice.reducer;

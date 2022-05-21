@@ -56,12 +56,12 @@ const checkFilesSent = () => {
   const proposedFileCount = store.getState().identity.peer.sendFileCount;
 
   if (doneEntries.length == proposedFileCount) {
-    WebRTC.sendAmstelMessage({ type: "close" });
+    WebRTC.closeAmstel();
   }
 };
 
 export const sendFile = async (file: File) => {
-  const dc = await WebRTC.createDataChannel();
+  const dc = await WebRTC.createFileChannel();
 
   const metadata: Metadata = {
     name: file.name,

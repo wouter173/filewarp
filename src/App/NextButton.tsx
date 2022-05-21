@@ -12,7 +12,7 @@ export default function NextButton() {
   const onClickHandler = () => {
     if (localFileCount == 0) {
       const informationData = {
-        title: "No file to be sent!",
+        title: "No files found!",
         body: "You must input at least 1 file before you are able to send files to someone.",
       };
 

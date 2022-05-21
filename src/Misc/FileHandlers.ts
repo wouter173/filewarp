@@ -42,6 +42,8 @@ export const receiveFile = async (buffer: ArrayBuffer, label: string) => {
     });
 
     const objectUrl = window.URL.createObjectURL(file);
+    fileparts[label].buffers = [];
+
     store.dispatch(setReceivedFileEntryFileUrl({ label, data: objectUrl }));
     WebRTC.removeDataChannel(label);
 
